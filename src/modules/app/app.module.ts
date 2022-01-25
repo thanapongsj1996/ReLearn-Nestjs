@@ -5,13 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { User } from '../users/users.entity'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
+import { Post } from "../posts/posts.entity"
 
 dotenv.config()
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Post]),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1d' }

@@ -1,8 +1,9 @@
 import * as bcrypt from 'bcrypt'
-import { BadRequestException, Body, Controller, Get, Post, Req, Res, UnauthorizedException } from '@nestjs/common'
-import { AppService } from './app.service'
-import { JwtService } from '@nestjs/jwt'
 import { Request, Response } from 'express'
+import { JwtService } from '@nestjs/jwt'
+import { BadRequestException, Body, Controller, Get, Post, Req, Res, UnauthorizedException, Param, Delete } from '@nestjs/common'
+
+import { AppService } from './app.service'
 
 @Controller()
 export class AppController {
@@ -18,7 +19,7 @@ export class AppController {
     @Body('password') password: string
   ) {
     const hashedPassword = await bcrypt.hash(password, 12)
-    const user = await this.appService.create({
+    const user = await this.appService.addUser({
       name,
       username,
       password: hashedPassword
@@ -34,7 +35,7 @@ export class AppController {
     @Body('password') password: string,
     @Res({ passthrough: true }) response: Response
   ) {
-    const user = await this.appService.findOne({ username })
+    const user = await this.appService.findUser({ username })
     if (!user) {
       throw new BadRequestException('invalid credentials')
     }
@@ -60,7 +61,7 @@ export class AppController {
         throw new UnauthorizedException()
       }
 
-      const user = await this.appService.findOne({ id: data['id'] })
+      const user = await this.appService.findUser({ id: data['id'] })
       delete user.password
 
       return user
@@ -74,6 +75,72 @@ export class AppController {
     response.clearCookie('jwt')
     return {
       message: 'success'
+    }
+  }
+
+  @Post('posts')
+  async createPost(
+    @Body('body') body: string,
+    @Req() request: Request
+  ) {
+    try {
+      const cookie = request.cookies['jwt']
+      const data = await this.jwtService.verifyAsync(cookie)
+      if (!data) {
+        throw new UnauthorizedException()
+      }
+
+      const payload = {
+        body,
+        userId: data['id']
+      }
+      const post = await this.appService.createPost(payload)
+
+      return post
+    } catch (e) {
+      throw new UnauthorizedException()
+    }
+  }
+
+  @Get('posts')
+  async getAllPosts() {
+    const posts = await this.appService.getAllPosts()
+    if (posts && posts.length > 0) {
+      posts.map(p => delete p.user.password)
+    }
+    return posts
+  }
+
+  @Get('posts/user/:id')
+  async getPostsByUserId(@Param("id") userId) {
+    const posts = await this.appService.getPostsByUserId(userId)
+    if (posts && posts.length > 0) {
+      posts.map(p => delete p.user.password)
+    }
+    return posts
+  }
+
+  @Delete('posts/:id')
+  async deletePostsByUserId(@Param("id") postId, @Req() request: Request) {
+    try {
+      const cookie = request.cookies['jwt']
+      const data = await this.jwtService.verifyAsync(cookie)
+      if (!data) {
+        throw new UnauthorizedException()
+      }
+
+      const post = await this.appService.getPostByPostId(postId)
+      if (!post || post.userId !== data['id']) {
+        throw new UnauthorizedException()
+      }
+
+      await this.appService.deletePostsByPostId(postId)
+
+      return {
+        message: "success"
+      }
+    } catch (e) {
+      throw new UnauthorizedException()
     }
   }
 }

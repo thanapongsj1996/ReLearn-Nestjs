@@ -1,22 +1,31 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, Generated, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { Exclude, Expose } from "class-transformer"
+import { Post } from "../posts/posts.entity"
 
 @Entity('users')
 export class User {
     @PrimaryGeneratedColumn()
-    id: number;
+    id: number
 
     @Column()
-    name: string;
+    name: string
 
     @Column({ unique: true })
-    username: string;
+    username: string
 
     @Column()
-    password: string;
+    @Exclude()
+    password: string
+
+    @OneToMany(
+        type => Post,
+        post => post.user
+    )
+    posts: Post[]
 
     @CreateDateColumn()
-    createdAt: Date;
+    createdAt: Date
 
     @UpdateDateColumn()
-    updatedAt: Date;
+    updatedAt: Date
 }
