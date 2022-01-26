@@ -22,8 +22,17 @@ export class AppService {
     return this.userRepository.save(data)
   }
 
-  async findUser(condition: any): Promise<User> {
+  async findUserLogin(condition: any): Promise<User> {
     return this.userRepository.findOne(condition)
+  }
+
+  async findUser(condition: any): Promise<User> {
+    return this.userRepository
+      .createQueryBuilder('users')
+      .leftJoinAndSelect("users.posts", "posts")
+      .where(`users.id = ${condition.id}`)
+      .orderBy({ 'posts.createdAt': 'DESC' })
+      .getOne()
   }
 
   async createPost(data: inputPost) {
@@ -33,6 +42,7 @@ export class AppService {
 
   async getAllPosts() {
     return this.postRepository.find({
+      order: { createdAt: 'DESC' },
       relations: ["user"]
     })
   }
@@ -47,6 +57,7 @@ export class AppService {
   async getPostsByUserId(userId: number) {
     return this.postRepository.find({
       where: { userId },
+      order: { createdAt: 'DESC' },
       relations: ["user"]
     })
   }

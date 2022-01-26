@@ -35,7 +35,7 @@ export class AppController {
     @Body('password') password: string,
     @Res({ passthrough: true }) response: Response
   ) {
-    const user = await this.appService.findUser({ username })
+    const user = await this.appService.findUserLogin({ username })
     if (!user) {
       throw new BadRequestException('invalid credentials')
     }
