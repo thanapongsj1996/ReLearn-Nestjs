@@ -1,20 +1,12 @@
 require("dotenv").config()
-const PostgressConnectionStringParser = require("pg-connection-string")
 
 
 let config
 let environment = process.env.NODE_ENV || 'production'
 if (environment === 'production') {
-    const databaseUrl = process.env.DATABASE_URL
-    const connectionOptions = PostgressConnectionStringParser.parse(databaseUrl);
-
     config = {
         type: "postgres",
-        host: connectionOptions.host,
-        port: connectionOptions.port,
-        username: connectionOptions.username,
-        password: connectionOptions.password,
-        database: connectionOptions.database,
+        url: process.env.DATABASE_URL,
         entities: ["dist/**/*.entity{.ts,.js}"],
         synchronize: true,
         cli: {
