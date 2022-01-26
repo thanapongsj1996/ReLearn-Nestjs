@@ -3,8 +3,8 @@ const PostgressConnectionStringParser = require("pg-connection-string")
 
 
 let config
-let environment = process.env.NODE_ENV || 'prod'
-if (environment === 'prod') {
+let environment = process.env.NODE_ENV || 'production'
+if (environment === 'production') {
     const databaseUrl = process.env.DATABASE_URL
     const connectionOptions = PostgressConnectionStringParser.parse(databaseUrl);
 
