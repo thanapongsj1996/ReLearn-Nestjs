@@ -5,13 +5,14 @@ let config
 let environment = process.env.NODE_ENV || 'production'
 if (environment === 'production') {
     config = {
-        type: "postgres",
         url: process.env.DATABASE_URL,
-        entities: ["dist/**/*.entity{.ts,.js}"],
-        synchronize: true,
-        cli: {
-            migrationsDir: "src/migration"
-        }
+        type: 'postgres',
+        ssl: {
+            rejectUnauthorized: false,
+        },
+        entities: ['dist/**/*.entity{.ts,.js}'],
+        synchronize: true, // This for development
+        autoLoadEntities: true,
     }
 } else if (environment === 'dev') {
     config = {
