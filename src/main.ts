@@ -14,6 +14,7 @@ async function bootstrap() {
       process.env.FRONTEND_URL,
       process.env.UNTURSTED_BANK_URL,
       process.env.REAL_UNTURSTED_BANK_URL,
+      process.env.HEROKU_FRONTEND_URL,
       'http://localhost:3000'
     ],
     credentials: true
