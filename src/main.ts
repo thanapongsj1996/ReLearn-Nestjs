@@ -10,7 +10,12 @@ async function bootstrap() {
   app.use(cookieParser())
   app.setGlobalPrefix("/api/v1")
   app.enableCors({
-    origin: [process.env.FRONTEND_URL, process.env.UNTURSTED_BANK_URL, 'http://localhost:3000'],
+    origin: [
+      process.env.FRONTEND_URL,
+      process.env.UNTURSTED_BANK_URL,
+      process.env.REAL_UNTURSTED_BANK_URL,
+      'http://localhost:3000'
+    ],
     credentials: true
   })
 
