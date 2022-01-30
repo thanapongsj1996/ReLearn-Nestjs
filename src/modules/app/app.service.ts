@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { Post } from '../posts/posts.entity'
 import { User } from '../users/users.entity'
+import { Transaction } from '../transactions/transactions.entity'
 
 interface inputPost {
   body: string
@@ -15,7 +16,9 @@ export class AppService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @InjectRepository(Post)
-    private readonly postRepository: Repository<Post>
+    private readonly postRepository: Repository<Post>,
+    @InjectRepository(Transaction)
+    private readonly transactionRepository: Repository<Transaction>
   ) { }
 
   async addUser(data: any): Promise<User> {
@@ -64,5 +67,18 @@ export class AppService {
 
   async deletePostsByPostId(postId: number) {
     return this.postRepository.delete(postId)
+  }
+
+  async addTransaction(data: any) {
+    return this.transactionRepository.save(data)
+  }
+
+  async getTransaction(address: string) {
+    return this.transactionRepository.find({
+      where: [
+        { from: address },
+        { to: address }
+      ]
+    })
   }
 }

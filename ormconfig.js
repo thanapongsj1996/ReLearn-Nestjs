@@ -14,7 +14,7 @@ if (environment === 'production') {
         synchronize: true, // This for development
         autoLoadEntities: true,
     }
-} else if (environment === 'dev') {
+} else if (environment === 'development') {
     config = {
         type: "postgres",
         host: process.env.DB_HOST,

@@ -143,4 +143,27 @@ export class AppController {
       throw new UnauthorizedException()
     }
   }
+
+  @Post('transactions')
+  async addTransaction(
+    @Body('from') from: string,
+    @Body('to') to: string,
+    @Body('amount') amount: string,
+    @Body('type') type: string
+  ) {
+    return this.appService.addTransaction({
+      from,
+      to,
+      amount,
+      type
+    })
+  }
+
+  @Get('transactions/:address')
+  async getTransaction(
+    @Param('address') address: string
+  ) {
+    return this.appService.getTransaction(address)
+  }
+
 }

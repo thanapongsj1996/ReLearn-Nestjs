@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, Generated, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
-import { Exclude, Expose } from "class-transformer"
+import { Exclude } from "class-transformer"
 import { Post } from "../posts/posts.entity"
 
 @Entity('users')
