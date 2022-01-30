@@ -74,11 +74,9 @@ export class AppService {
   }
 
   async getTransaction(address: string) {
-    return this.transactionRepository.find({
-      where: [
-        { from: address },
-        { to: address }
-      ]
-    })
+    return this.transactionRepository
+      .createQueryBuilder("transactions")
+      .where("transactions.from = :from", { from: address })
+      .orWhere("transactions.to = :to", { to: address }).getMany()
   }
 }
