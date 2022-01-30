@@ -46,7 +46,7 @@ export class AppController {
     }
 
     const jwt = await this.jwtService.signAsync({ id: user.id })
-    response.cookie('jwt', jwt, { httpOnly: true })
+    response.cookie('jwt', jwt)
     return {
       message: 'success'
     }
