@@ -151,12 +151,7 @@ export class AppController {
     @Body('amount') amount: string,
     @Body('type') type: string
   ) {
-    return this.appService.addTransaction({
-      from,
-      to,
-      amount,
-      type
-    })
+    return this.appService.addTransaction({ from, to, amount, type })
   }
 
   @Get('transactions/:address')
