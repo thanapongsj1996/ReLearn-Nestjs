@@ -1,7 +1,7 @@
 import * as bcrypt from 'bcrypt'
 import { Request, Response } from 'express'
 import { JwtService } from '@nestjs/jwt'
-import { BadRequestException, Body, Controller, Get, Post, Req, Res, UnauthorizedException, Param, Delete } from '@nestjs/common'
+import { BadRequestException, Body, Controller, Get, Post, Headers, Req, Res, UnauthorizedException, Param, Delete } from '@nestjs/common'
 
 import { AppService } from './app.service'
 
@@ -46,17 +46,19 @@ export class AppController {
     }
 
     const jwt = await this.jwtService.signAsync({ id: user.id })
-    response.cookie('jwt', jwt)
     return {
-      message: 'success'
+      jwt: jwt
     }
   }
 
   @Get('user')
-  async user(@Req() request: Request) {
+  async user(@Headers() headers) {
     try {
-      const cookie = request.cookies['jwt']
-      const data = await this.jwtService.verifyAsync(cookie)
+      if (!headers.authorization && headers.authorization == '') {
+        throw new UnauthorizedException()
+      }
+      const jwt = headers.authorization.split('Bearer ')[1]
+      const data = await this.jwtService.verifyAsync(jwt)
       if (!data) {
         throw new UnauthorizedException()
       }
@@ -71,8 +73,10 @@ export class AppController {
   }
 
   @Post('logout')
-  async logout(@Res({ passthrough: true }) response: Response) {
-    response.clearCookie('jwt')
+  async logout(@Headers() headers) {
+    if (!headers.authorization && headers.authorization == '') {
+      throw new UnauthorizedException()
+    }
     return {
       message: 'success'
     }
@@ -81,11 +85,14 @@ export class AppController {
   @Post('posts')
   async createPost(
     @Body('body') body: string,
-    @Req() request: Request
+    @Headers() headers
   ) {
     try {
-      const cookie = request.cookies['jwt']
-      const data = await this.jwtService.verifyAsync(cookie)
+      if (!headers.authorization && headers.authorization == '') {
+        throw new UnauthorizedException()
+      }
+      const jwt = headers.authorization.split('Bearer ')[1]
+      const data = await this.jwtService.verifyAsync(jwt)
       if (!data) {
         throw new UnauthorizedException()
       }
@@ -121,10 +128,13 @@ export class AppController {
   }
 
   @Delete('posts/:id')
-  async deletePostsByUserId(@Param("id") postId, @Req() request: Request) {
+  async deletePostsByUserId(@Param("id") postId, @Headers() headers) {
     try {
-      const cookie = request.cookies['jwt']
-      const data = await this.jwtService.verifyAsync(cookie)
+      if (!headers.authorization && headers.authorization == '') {
+        throw new UnauthorizedException()
+      }
+      const jwt = headers.authorization.split('Bearer ')[1]
+      const data = await this.jwtService.verifyAsync(jwt)
       if (!data) {
         throw new UnauthorizedException()
       }
